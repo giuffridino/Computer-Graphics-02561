@@ -1,0 +1,22 @@
+In P1 I only apply a view_matrix which is directly multiplied to the position
+in the vertex shader.
+
+In P2 I apply a number of transformations to each instance. To all instances I apply a 
+projection matrix and view matrix in this order: 
+
+proj_mat * view_mat * model_mat * a_Position;
+
+The considered model_mat in the first instance is a simple Identity matrix changing 
+the formula to:
+
+proj_mat * view_mat * I_mat * a_Position;
+
+In the second instance we are simply translating the image downwards changing the 
+formula to:
+
+proj_mat * view_mat * transl_mat * a_Position;
+
+Finally, in the third instance we also apply two rotations changing the formula
+to:
+
+proj_mat * view_mat * transl_mat * rotateX_mat * rotateZ_mat * a_Position;

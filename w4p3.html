@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W4P3</title>
+    <script type="text/javascript" src="w4p3.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec4 surface_normal;
+        varying vec4 color;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        uniform mat3 normal_matrix;
+        vec4 lightPos = vec4(0.0, 0.0, -1.0, 0.0);
+        vec3 L_e = vec3(1.0, 1.0, 1.0);
+        float V = 1.0;
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+            //vec4 pos = model_matrix * a_Position;
+
+            //vec3 w_i = lightPos.w == 0.0 ? normalize(-(view_matrix * lightPos).xyz) : normalize(lightPos.xyz - pos.xyz);
+            //vec3 L_rd = vec3(0.0, 0.0, 1.0) * V * L_e * max(dot(normalize(normal_matrix * surface_normal.xyz), w_i),0.0);
+            //vec3 L_a = vec3(0.0, 0.0, 0.0);
+            //vec3 L_o = L_rd + L_a;
+            //color = vec4(L_o, 1.0);
+
+            vec3 pos = (view_matrix * model_matrix * a_Position).xyz;
+            vec3 L =  lightPos.w == 0.0 ? normalize(-lightPos.xyz) : normalize(lightPos.xyz - pos);
+            L = (view_matrix * vec4(L, 0.0)).xyz;
+            vec3 E = -normalize(pos);
+            vec3 H = normalize(L + E);
+            vec3 N = normalize((view_matrix * model_matrix * surface_normal).xyz);
+            vec3 ambientProduct =vec3(0.0, 0.0, 0.0);
+            vec3 diffuseProduct = vec3(1.0, 0.0, 0.0);
+            vec3 ambient =  ambientProduct;
+            vec3 diffuse =  max(dot(L, N), 0.0) * diffuseProduct;
+            color = vec4(vec3(ambient + diffuse), 1.0); 
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        void main() {
+            gl_FragColor = color;
+        }
+    </script>
+</head>    
+<body>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas>
+    <button id = "IncreaseSubdivisions"> Increase subdivisions</button>
+    <button id = "DecreaseSubdivisions"> Decrease subdivisions</button>
+</body>
+</html>

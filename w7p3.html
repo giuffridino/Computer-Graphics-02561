@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W7P3</title>
+    <script type="text/javascript" src="w7p3.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/OBJParser.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec2 a_TexCoord;
+        attribute vec4 surface_normal;
+        varying vec4 color;
+        varying vec4 fTexCoord;
+        varying vec4 v_normal;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        uniform mat4 tex_matrix;
+
+        varying vec3 pos;        
+        void main() {
+            fTexCoord = tex_matrix * a_Position;
+            pos = (model_matrix * a_Position).xyz;
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+            
+            v_normal = surface_normal;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        uniform samplerCube texMap;
+        varying vec4 fTexCoord;
+        varying vec4 v_normal;
+        uniform int reflective;
+        uniform vec3 eye_pos;
+        varying vec3 pos;
+        void main() {
+            vec3 R;
+            if(reflective == 1)
+            {
+                R = reflect(pos - eye_pos.xyz, v_normal.xyz);
+                
+            }
+            else 
+            {
+                R = fTexCoord.xyz;
+            }
+            vec4 texColor = textureCube(texMap, R);
+            gl_FragColor = texColor;
+        }
+    </script>
+</head>     
+<body>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas> 
+    <br>
+    <button id = "StopRotation"> Start/Stop Rotation</button>
+    </select>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W8P3</title>
+    <script type="text/javascript" src="w8p3.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/OBJParser.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec2 a_TexCoord;
+        varying vec2 fTexCoord;
+        varying vec4 color;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+
+        uniform mat4 shadow_matrix;
+
+        uniform vec4 LightPos;
+
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+
+            fTexCoord = a_TexCoord;
+            color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        uniform sampler2D texMap;
+        uniform int notShadow;
+        varying vec2 fTexCoord;
+        void main() {
+            vec4 visibility = vec4(notShadow, notShadow, notShadow, 1.0);
+            gl_FragColor = visibility * texture2D(texMap, fTexCoord);
+        }
+    </script>
+</head>     
+<body>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas> 
+    <button id = "StopRotation"> Start/Stop Rotation</button>
+</body>
+</html>

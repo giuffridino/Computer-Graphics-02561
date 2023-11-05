@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W6P2</title>
+    <script type="text/javascript" src="w6p2.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/OBJParser.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec2 a_TexCoord;
+        varying vec2 fTexCoord;
+        varying vec4 color;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+
+            fTexCoord = a_TexCoord;
+            color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        uniform sampler2D texMap;
+        varying vec2 fTexCoord;
+        void main() {
+            gl_FragColor = texture2D(texMap, fTexCoord);
+        }
+    </script>
+</head>     
+<body>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas> 
+    <br>
+    <button id = "Repeat"> Enable Repeat</button>
+    <button id = "Clamp-to-edge"> Enable Clamp-to-edge</button>
+    <select id = "FilterMode" size = "1"> 
+        <option value = "0"> Nearest </option>
+        <option value = "1"> Linear </option>
+        <option value = "2"> Nearest Mipmap Nearest </option>
+        <option value = "3"> Linear Mipmap Nearest </option>
+        <option value = "4"> Nearest Mipmap Linear </option>
+        <option value = "5"> Linear Mipmap Linear </option>
+    </select>
+</body>
+</html>

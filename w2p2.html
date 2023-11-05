@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W2P2</title>
+    <script type="text/javascript" src="w2p2.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        varying vec4 color;
+        void main() {
+        gl_Position = a_Position;
+        gl_PointSize = 10.0;
+        color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        void main() {
+        gl_FragColor = color;
+        }
+    </script>
+</head>    
+<body>
+<canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas>
+<select id = "colorMenu" size = "8">
+    <option value = "0" selected> Black </option>
+    <option value = "1" selected> Red </option>
+    <option value = "2" selected> Yellow </option>
+    <option value = "3" selected> Green </option>
+    <option value = "4" selected> Blue </option>
+    <option value = "5" selected> Magenta </option>
+    <option value = "6" selected> Cyan </option>
+    <option value = "7" selected> Cornflower </option>
+</select>
+<select id = "clearMenu" size = "1">
+    <option value = "0" selected> Black </option>
+    <option value = "1" selected> Red </option>
+    <option value = "2" selected> Yellow </option>
+    <option value = "3" selected> Green </option>
+    <option value = "4" selected> Blue </option>
+    <option value = "5" selected> Magenta </option>
+    <option value = "6" selected> Cyan </option>
+    <option value = "7" selected> Cornflower </option>
+</select>
+<button id = "clearButton"> Clear canvas</button>
+</body></html>

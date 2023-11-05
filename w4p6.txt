@@ -1,0 +1,31 @@
+(1) The phong illumination model tells us for a given point light, surface and viewer 
+the amount of light which is reflected towards the viewer. The phong shading model
+then evaluattes the illumination model at every pixel and uses the result directly as pixel
+color depending on the shape and chosen illumination model. 
+
+(2) In flat shading since we are assuming a face of the model hahs constant vectors
+used in the shading calculations we can perform the calculation only once. This leads
+to an efficient shading, even though it does not work well with complicated meshes with
+many curves since it will appear very blocky. Especially if we are trying to shade
+smooth surfaces it will underperform since there will be very small differences
+which are nonetheless visible to the human eye. In gourad shading we take the normal
+of each vertex, calculation is performed in vertex shader, by taking the normalize average 
+of the normals of the polygons that share that vertex. To do this we need a correct 
+data structure to store the vertices and the faces which impact its normal calculation. 
+While Gourad shading is definetely better than flat shading it still presentns some problems.
+Phong shading combines the diffuse, ambient and specular factors at each pixel to correctly shade the 
+scene as well as creating highlights in metallic/glossy surfaces. Phong is better at 
+simulating highlights since gourad shading will result blocky in appearance.
+
+(3) A directional light has w component set to zero while point light has w component
+set to 1. This means that a directional light hits the surfaces from the same direction
+while a point light will have different angle of incidence depending on the pixel 
+position and light position
+
+(4) If the specular term is set to zero then no highlight will be present
+on our surfaces. 
+
+(5) If we increase the shininess component the highlight will be smaller and brighter.
+Otherwise it will be broader and less intense. 
+
+(6) I computed the lighting in eye space because I multiplied by the view matrix. 

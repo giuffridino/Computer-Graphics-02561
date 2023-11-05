@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W4P1</title>
+    <script type="text/javascript" src="w4p1.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        varying vec4 color;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+            //gl_Position = projection_matrix * view_matrix * a_Position;
+            gl_PointSize = 10.0;
+            color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        void main() {
+            gl_FragColor = color;
+        }
+    </script>
+</head>    
+<body>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas>
+</body>
+</html>
