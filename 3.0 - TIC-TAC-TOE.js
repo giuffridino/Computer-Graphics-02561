@@ -41,21 +41,21 @@ window.onload = function init()
     gl.vertexAttribPointer(vColors, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColors);
 
-    var playing_positions = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var playing_positions = ["", "", "", "", "", "", "", "", ""];
     var count = 0;
-    var player = -1;
+    var player = "O";
     var two_player_mode = true;
 
     function drawShape(x, y, in_player)
     {
         hud.font = '70px "Century Gothic"'; 
         hud.fillStyle = 'white';
-        if (in_player == 1) 
+        if (in_player == "X") 
         {
             x += 8;
             hud.fillText('X', x, y);
         }
-        else if (in_player == -1) 
+        else if (in_player == "O") 
         {
             hud.fillText('O', x, y);
         }
@@ -65,10 +65,10 @@ window.onload = function init()
     {
         hud.font = '65px "Century Gothic"'; 
         hud.fillStyle = 'white';
-        if (in_player == 1) {
+        if (in_player == "X") {
             hud.fillText("X has won!!!", 65, 460);
         }
-        else if (in_player == -1) {
+        else if (in_player == "O") {
             hud.fillText("O has won!!!", 65, 460);
         }
     }
@@ -84,11 +84,11 @@ window.onload = function init()
     {
         hud.font = '40px "Century Gothic"'; 
         hud.fillStyle = 'white';
-        if (in_player == 1) 
+        if (in_player == "X") 
         {
             hud.fillText("X is playing", 150, 450);
         }
-        else if(in_player == -1)
+        else if(in_player == "O")
         {
             hud.fillText("O is playing", 139.5, 450);
         }
@@ -97,39 +97,30 @@ window.onload = function init()
     function findShapeCoords(index)
     {
         if (index == 0) {
-            // console.log("Position 0");
             return vec2(141 , 367);
         }
         else if (index == 1) {
-            // console.log("Position 1");
             return vec2(223, 367);
         }
         else if (index == 2) {
-            // console.log("Position 2");
             return vec2(307, 367);
         }
         else if (index == 3) {
-            // console.log("Position 3");
             return vec2(141 , 283);
         }
         else if (index == 4) {
-            // console.log("Position 4");
             return vec2(223, 283);
         }
         else if (index == 5) {
-            // console.log("Position 5");
             return vec2(307, 283);
         }
         else if (index == 6) {
-            // console.log("Position 6");
             return vec2(141 , 200);
         }
         else if (index == 7) {
-            // console.log("Position 7");
             return vec2(223, 200);
         }
         else if (index == 8) {
-            // console.log("Position 8");
             return vec2(307, 200);
         }
         return vec2(0);
@@ -139,7 +130,7 @@ window.onload = function init()
     {
         for (let i = 0; i < 9; i++) 
         {
-            if (playing_positions[i] == 1 || playing_positions[i] == -1) 
+            if (playing_positions[i] == "X" || playing_positions[i] == "O") 
             {
                 let coords = findShapeCoords(i);
                 drawShape(coords[0], coords[1], playing_positions[i]);
@@ -152,8 +143,7 @@ window.onload = function init()
         hud.reset();
         displayTitle(hud);
         redrawMoves(playing_positions);
-        player *= -1;
-        displayPlayer(hud, player);
+        player = player == "X" ? "O" : "X";
     }
 
     function checkWinner()
@@ -198,7 +188,7 @@ window.onload = function init()
             }
         }
         if (tie && !winner) {
-            winner = 0;
+            winner = "tie";
             gameTied = true;
         }
 
@@ -214,7 +204,7 @@ window.onload = function init()
     {
         if (mousepos[0] > -0.5 && mousepos[0] < -0.17 && mousepos[1] > -0.5 && mousepos[1] < -0.17) 
         {
-            if (playing_positions[0] == 0) 
+            if (playing_positions[0] == "") 
             {
                 playing_positions[0] = player;
                 redrawMoves();
@@ -228,7 +218,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > -0.17 && mousepos[0] < 0.17 && mousepos[1] > -0.5 && mousepos[1] < -0.17)
         {
-            if (playing_positions[1] == 0) 
+            if (playing_positions[1] == "") 
             {
                 playing_positions[1] = player;
                 redrawMoves();
@@ -241,7 +231,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > 0.17 && mousepos[0] < 0.5 && mousepos[1] > -0.5 && mousepos[1] < -0.17)
         {
-            if (playing_positions[2] == 0) 
+            if (playing_positions[2] == "") 
             {
                 playing_positions[2] = player;
                 redrawMoves();
@@ -254,7 +244,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > -0.5 && mousepos[0] < -0.17 && mousepos[1] > -0.17 && mousepos[1] < 0.17)
         {
-            if (playing_positions[3] == 0) 
+            if (playing_positions[3] == "") 
             {
                 playing_positions[3] = player;
                 redrawMoves();
@@ -267,7 +257,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > -0.17 && mousepos[0] < 0.17 && mousepos[1] > -0.17 && mousepos[1] < 0.17)
         {
-            if (playing_positions[4] == 0) 
+            if (playing_positions[4] == "") 
             {
                 playing_positions[4] = player;
                 redrawMoves();
@@ -280,7 +270,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > 0.17 && mousepos[0] < 0.5 && mousepos[1] > -0.17 && mousepos[1] < 0.17)
         {
-            if (playing_positions[5] == 0) 
+            if (playing_positions[5] == "") 
             {
                 playing_positions[5] = player;
                 redrawMoves();
@@ -293,7 +283,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > -0.5 && mousepos[0] < -0.17 && mousepos[1] > 0.17 && mousepos[1] < 0.5)
         {
-            if (playing_positions[6] == 0) 
+            if (playing_positions[6] == "") 
             {
                 playing_positions[6] = player;
                 redrawMoves();
@@ -306,7 +296,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > -0.17 && mousepos[0] < 0.17 && mousepos[1] > 0.17 && mousepos[1] < 0.5)
         {
-            if (playing_positions[7] == 0) 
+            if (playing_positions[7] == "") 
             {
                 playing_positions[7] = player;
                 redrawMoves();
@@ -319,7 +309,7 @@ window.onload = function init()
         }
         else if(mousepos[0] > 0.17 && mousepos[0] < 0.5 && mousepos[1] > 0.17 && mousepos[1] < 0.5)
         {
-            if (playing_positions[8] == 0) 
+            if (playing_positions[8] == "") 
             {
                 playing_positions[8] = player;
                 redrawMoves();
@@ -342,7 +332,7 @@ window.onload = function init()
             displayTitle(hud);
             if(two_player_mode)
             {
-                player *= -1;
+                switchPlayer();
             }
             displayWin(checkWinner());
             redrawMoves();
@@ -358,9 +348,15 @@ window.onload = function init()
         }
     }
 
+    let scores = {
+        "X": 1,
+        "O": -1,
+        "tie": 0,
+    }
+
     function minimax(depth, isMaximizing)
     {
-        return 1;
+        // return 1;
         let result = checkWinner();
         if (result !== null) 
         {
@@ -372,12 +368,12 @@ window.onload = function init()
             let bestScore = -Infinity;
             for (let i = 0; i < 9; i++)
             {
-                if (playing_positions[i] == 0) 
+                if (playing_positions[i] == "") 
                 {
-                    playing_positions[i] = 1;
+                    playing_positions[i] = "X";
                     let score = minimax(depth + 1, false);
-                    playing_positions[i] = 0;
-                    bestScore = Math.max(score, bestScore)
+                    playing_positions[i] = "";
+                    bestScore = Math.max(scores[score], bestScore)
                 }
             }
             return bestScore;
@@ -387,12 +383,12 @@ window.onload = function init()
             let bestScore = Infinity;
             for (let i = 0; i < 9; i++)
             {
-                if (playing_positions[i] == 0) 
+                if (playing_positions[i] == "") 
                 {
-                    playing_positions[i] = -1;
+                    playing_positions[i] = "O";
                     let score = minimax(depth + 1, true);
-                    playing_positions[i] = 0;
-                    bestScore = Math.min(score, bestScore);
+                    playing_positions[i] = "";
+                    bestScore = Math.min(scores[score], bestScore);
                 }
             }
             return bestScore;
@@ -405,11 +401,11 @@ window.onload = function init()
         let bestMove;
         for (let i = 0; i < 9; i++)
         {
-            if (playing_positions[i] == 0) 
+            if (playing_positions[i] == "") 
             {
-                playing_positions[i] = 1;
+                playing_positions[i] = "X";
                 let score = minimax(0, false);
-                playing_positions[i] = 0;
+                playing_positions[i] = "";
                 if (score > bestScore) 
                 {
                     bestScore = score;
@@ -417,7 +413,7 @@ window.onload = function init()
                 }
             }
         }
-        playing_positions[bestMove] = 1;
+        playing_positions[bestMove] = "X";
         redrawMoves();
     }
 
@@ -428,6 +424,7 @@ window.onload = function init()
         if (!gameWon && !gameTied)
         {
             handleMousePosClick(mousepos);
+            displayPlayer(hud, player);
         }
         //Check if game has been won by player
         checkGameWin();
@@ -445,8 +442,8 @@ window.onload = function init()
         hud.reset();
         gameWon = false;
         gameTied = false;
-        playing_positions = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-        player = -1;
+        playing_positions = ["", "", "", "", "", "", "", "", ""];
+        player = "O";
         text_draw_count = 0;
         text_win_count = 0;
         count = 0;
