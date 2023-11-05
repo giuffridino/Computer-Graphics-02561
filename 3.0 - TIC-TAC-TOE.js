@@ -15,7 +15,7 @@ window.onload = function init()
         hud.fillStyle = 'white';
         hud.fillText('Tic-Tac-Toe', 355, 45);
     }
-    displayTitle(hud);
+    // displayTitle(hud);
 
     var vertices = [ vec2(-0.6, -0.6), vec2(-0.6, 0.6), vec2(0.6, -0.6), vec2(-0.6, 0.6), vec2(0.6, -0.6), vec2(0.6, 0.6),
         vec2(-0.520 + 0.33, -0.520 + 0.03), vec2(-0.520 + 0.33, 0.5 - 0.03), vec2(0.5 - 0.66, -0.520 + 0.03), vec2(-0.520 + 0.33, 0.5 - 0.03), vec2(0.5 - 0.66, -0.520 + 0.03), vec2(0.5 - 0.66, 0.5 - 0.03),
@@ -44,7 +44,7 @@ window.onload = function init()
     var playing_positions = ["", "", "", "", "", "", "", "", ""];
     var count = 0;
     var player = "O";
-    var two_player_mode = false;
+    var two_player_mode = true;
 
     function drawShape(x, y, in_player)
     {
@@ -63,13 +63,25 @@ window.onload = function init()
 
     function displayWin(in_player)
     {
-        hud.font = '65px "Century Gothic"'; 
+        hud.font = '45px "Century Gothic"'; 
         hud.fillStyle = 'white';
-        if (in_player == "X") {
-            hud.fillText("X has won!!!", 65, 460);
+        if (two_player_mode)
+        {
+            if (in_player == "X") {
+                hud.fillText("X has won!!!", 65, 450);
+            }
+            else if (in_player == "O") {
+                hud.fillText("O has won!!!", 65, 450);
+            }
         }
-        else if (in_player == "O") {
-            hud.fillText("O has won!!!", 65, 460);
+        else
+        {
+            if (in_player == "X") {
+                hud.fillText("AI has won!!!", 115, 450);
+            }
+            else if (in_player == "O") {
+                hud.fillText("You have won!!!", 80, 450);
+            }
         }
     }
 
@@ -84,13 +96,20 @@ window.onload = function init()
     {
         hud.font = '40px "Century Gothic"'; 
         hud.fillStyle = 'white';
-        if (in_player == "X") 
+        if (two_player_mode) 
         {
-            hud.fillText("X is playing", 150, 450);
+            if (in_player == "X") 
+            {
+                hud.fillText("X is playing", 150, 450);
+            }
+            else if(in_player == "O")
+            {
+                hud.fillText("O is playing", 139.5, 450);
+            }
         }
-        else if(in_player == "O")
+        else
         {
-            hud.fillText("O is playing", 139.5, 450);
+            hud.fillText("Playing against AI", 90, 450);
         }
     }
 
@@ -141,7 +160,7 @@ window.onload = function init()
     function switchPlayer()
     {
         hud.reset();
-        displayTitle(hud);
+        // displayTitle(hud);
         redrawMoves(playing_positions);
         player = player == "X" ? "O" : "X";
     }
@@ -329,7 +348,7 @@ window.onload = function init()
         {
             // gameWon = true;
             hud.reset();
-            displayTitle(hud);
+            // displayTitle(hud);
             if(two_player_mode)
             {
                 switchPlayer();
@@ -341,7 +360,7 @@ window.onload = function init()
         if (gameTied && gameWon == false && text_draw_count == 0 && text_win_count == 0) 
         {
             hud.reset();
-            displayTitle(hud);
+            // displayTitle(hud);
             displayDraw();
             redrawMoves();
             text_draw_count++;
@@ -399,6 +418,7 @@ window.onload = function init()
     {
         let bestScore = -Infinity;
         let bestMove;
+        let secondBestMove = null;
         for (let i = 0; i < 9; i++)
         {
             if (playing_positions[i] == "") 
@@ -406,12 +426,21 @@ window.onload = function init()
                 playing_positions[i] = "X";
                 let score = minimax(0, false);
                 playing_positions[i] = "";
-                if (score > bestScore) 
+                if (score == Infinity) 
                 {
                     bestScore = score;
                     bestMove = i;
                 }
+                else if(score > bestScore) 
+                {
+                    secondBestMove = (!secondBestMove && score != -10) ? i : bestMove;
+                    bestScore = score;
+                    bestMove = i;
+                }
             }
+        }
+        if (secondBestMove) {
+            bestMove = (Math.random() < 0.5) ? bestMove : secondBestMove;
         }
         playing_positions[bestMove] = "X";
         redrawMoves();
@@ -438,8 +467,7 @@ window.onload = function init()
         checkGameWin();
     });
 
-    startAgainButton = document.getElementById("startAgainButton");
-    startAgainButton.addEventListener("click", function(ev)
+    function resetGame()
     {
         hud.reset();
         gameWon = false;
@@ -449,32 +477,46 @@ window.onload = function init()
         text_draw_count = 0;
         text_win_count = 0;
         count = 0;
-        displayTitle(hud);
+        // displayTitle(hud);
         displayPlayer(hud, player);
         render();
+    }
+
+    startAgainButton = document.getElementById("startAgainButton");
+    startAgainButton.addEventListener("click", function(ev)
+    {
+        resetGame();
+        // hud.reset();
+        // gameWon = false;
+        // gameTied = false;
+        // playing_positions = ["", "", "", "", "", "", "", "", ""];
+        // player = "O";
+        // text_draw_count = 0;
+        // text_win_count = 0;
+        // count = 0;
+        // displayTitle(hud);
+        // displayPlayer(hud, player);
+        // render();
     });
 
-    // // Get the button element and the icon element
-    // const button = document.getElementById("two-player-button");
-    // const icon = button.querySelector("i");
+    const iconButton = document.getElementById('iconButton');
+    const icon1 = document.getElementById('icon1');
+    const icon2 = document.getElementById('icon2');
+    let isIcon1Visible = true;
 
-    // // Define two icon class names
-    // const firstIconClass = "fa-solid fa-user-group"; // Initial icon
-    // const secondIconClass = "fa-solid fa-user"; // Icon to switch to
-
-    // // Add a click event listener to the button
-    // button.addEventListener("click", function() {
-    //     // Check the current class of the icon
-    //     if (icon.classList.contains(firstIconClass)) {
-    //         // Switch to the second icon
-    //         icon.classList.remove(firstIconClass);
-    //         icon.classList.add(secondIconClass);
-    //     } else {
-    //         // Switch back to the first icon
-    //         icon.classList.remove(secondIconClass);
-    //         icon.classList.add(firstIconClass);
-    //     }
-    // });
+    iconButton.addEventListener('click', () => {
+        if (isIcon1Visible) {
+            icon1.style.display = 'none';
+            icon2.style.display = 'inline';
+            two_player_mode = false;
+        } else {
+            icon1.style.display = 'inline';
+            icon2.style.display = 'none';
+            two_player_mode = true;
+        }
+        isIcon1Visible = !isIcon1Visible;
+        resetGame();
+    });
 
     function render()
     {

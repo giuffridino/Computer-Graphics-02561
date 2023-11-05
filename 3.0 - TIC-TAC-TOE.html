@@ -20,8 +20,8 @@
             position: absolute;
             /* justify-content: left;
             align-items: first baseline; */
-            top: 10px;
-            left: 10px;
+            bottom: 100px;
+            left: 35%;
             z-index: 2;
             background-color: black;
             color: white;
@@ -40,8 +40,8 @@
 
         .btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            bottom: 100px;
+            right: 35%;
             background-color: black; /* Blue background */
             border: none; /* Remove borders */
             color: white; /* White text */
@@ -60,9 +60,12 @@
             color: black;
         }
 
-        .btn.iconize1{
-            padding-right: 50px;
-
+        .title {
+            position: absolute;
+            font-family: "Century Gothic";
+            font-size: 50px;
+            color: white;
+            top: 10px;
         }
     </style>
     <script src="https://kit.fontawesome.com/44e401cb85.js" crossorigin="anonymous"></script>
@@ -89,9 +92,14 @@
     </script>
 </head>    
 <body>
-<br>
-<canvas id="c" width="512" height="512" style = "position: absolute; z-index: 0">Please use a browser that supports HTML5 </canvas>
-<canvas id="hud" width="512" height="512" style = "position: absolute; z-index: 1"></canvas>
-<button id="startAgainButton" class="restart-button"> Restart game</button>
-<!-- <button id="two-player-button" class="btn"><i class="fa-solid fa-user-group"></i></button> -->
-</body></html>
+    <div class="title">Tic-Tac-Toe</div>
+    <br>
+    <canvas id="c" width="512" height="512" style = "position: absolute; z-index: 0">Please use a browser that supports HTML5 </canvas>
+    <canvas id="hud" width="512" height="512" style = "position: absolute; z-index: 1"></canvas>
+    <button id="startAgainButton" class="restart-button"> Restart game</button>
+    <button id="iconButton" class="btn">
+        <i class="fas fa-user-group" id="icon1" style="display: inline;"></i>
+        <i class="fas fa-robot" id="icon2" style="display: none;"></i>
+    </button>  
+</body>
+</html>
