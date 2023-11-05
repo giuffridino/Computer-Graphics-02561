@@ -37,7 +37,35 @@
             background-color: white;
             color: black;
         }
+
+        .btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: black; /* Blue background */
+            border: none; /* Remove borders */
+            color: white; /* White text */
+            padding: 12px 16px; /* Some padding */
+            border: 2px solid white;
+            border-radius: 3px;
+            font-size: 16px; /* Set a font size */
+            font-family: "Century Gothic";
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer; /* Mouse pointer on hover */
+        }
+
+        /* Darker background on mouse-over */
+        .btn:hover {
+            background-color: white;
+            color: black;
+        }
+
+        .btn.iconize1{
+            padding-right: 50px;
+
+        }
     </style>
+    <script src="https://kit.fontawesome.com/44e401cb85.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="3.0 - TIC-TAC-TOE.js"></script>
     <script type="text/javascript" src="common/initShaders.js"></script>
     <script type="text/javascript" src="common/MV.js"></script>
@@ -64,5 +92,6 @@
 <br>
 <canvas id="c" width="512" height="512" style = "position: absolute; z-index: 0">Please use a browser that supports HTML5 </canvas>
 <canvas id="hud" width="512" height="512" style = "position: absolute; z-index: 1"></canvas>
-<button id = "startAgainButton" class="restart-button"> Restart game</button>
+<button id="startAgainButton" class="restart-button"> Restart game</button>
+<!-- <button id="two-player-button" class="btn"><i class="fa-solid fa-user-group"></i></button> -->
 </body></html>

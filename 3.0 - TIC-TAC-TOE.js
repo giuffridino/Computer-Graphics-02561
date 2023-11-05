@@ -44,7 +44,7 @@ window.onload = function init()
     var playing_positions = ["", "", "", "", "", "", "", "", ""];
     var count = 0;
     var player = "O";
-    var two_player_mode = true;
+    var two_player_mode = false;
 
     function drawShape(x, y, in_player)
     {
@@ -349,8 +349,8 @@ window.onload = function init()
     }
 
     let scores = {
-        "X": 1,
-        "O": -1,
+        "X": 10,
+        "O": -10,
         "tie": 0,
     }
 
@@ -360,7 +360,7 @@ window.onload = function init()
         let result = checkWinner();
         if (result !== null) 
         {
-            return result;
+            return scores[result] / depth;
         }
 
         if (isMaximizing) 
@@ -373,7 +373,7 @@ window.onload = function init()
                     playing_positions[i] = "X";
                     let score = minimax(depth + 1, false);
                     playing_positions[i] = "";
-                    bestScore = Math.max(scores[score], bestScore)
+                    bestScore = Math.max(score, bestScore)
                 }
             }
             return bestScore;
@@ -388,7 +388,7 @@ window.onload = function init()
                     playing_positions[i] = "O";
                     let score = minimax(depth + 1, true);
                     playing_positions[i] = "";
-                    bestScore = Math.min(scores[score], bestScore);
+                    bestScore = Math.min(score, bestScore);
                 }
             }
             return bestScore;
@@ -415,6 +415,8 @@ window.onload = function init()
         }
         playing_positions[bestMove] = "X";
         redrawMoves();
+        gameWon = false;
+        gameTied = false;
     }
 
     canvas2d.addEventListener("click", function (ev)
@@ -451,6 +453,28 @@ window.onload = function init()
         displayPlayer(hud, player);
         render();
     });
+
+    // // Get the button element and the icon element
+    // const button = document.getElementById("two-player-button");
+    // const icon = button.querySelector("i");
+
+    // // Define two icon class names
+    // const firstIconClass = "fa-solid fa-user-group"; // Initial icon
+    // const secondIconClass = "fa-solid fa-user"; // Icon to switch to
+
+    // // Add a click event listener to the button
+    // button.addEventListener("click", function() {
+    //     // Check the current class of the icon
+    //     if (icon.classList.contains(firstIconClass)) {
+    //         // Switch to the second icon
+    //         icon.classList.remove(firstIconClass);
+    //         icon.classList.add(secondIconClass);
+    //     } else {
+    //         // Switch back to the first icon
+    //         icon.classList.remove(secondIconClass);
+    //         icon.classList.add(firstIconClass);
+    //     }
+    // });
 
     function render()
     {
