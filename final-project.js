@@ -49,29 +49,10 @@ window.onload = function init()
 
     var objectStore = {};
     var requestStore = [];
-    objectStore['Animation/slow_run_timmy1.obj'] = initObject(gl,'Animation/slow_run_timmy1.obj', 1, 0);
-    objectStore['Animation/slow_run_timmy2.obj'] = initObject(gl,'Animation/slow_run_timmy2.obj', 1, 1);
-    objectStore['Animation/slow_run_timmy3.obj'] = initObject(gl,'Animation/slow_run_timmy3.obj', 1, 2);
-    objectStore['Animation/slow_run_timmy4.obj'] = initObject(gl,'Animation/slow_run_timmy4.obj', 1, 3);
-    objectStore['Animation/slow_run_timmy5.obj'] = initObject(gl,'Animation/slow_run_timmy5.obj', 1, 4);
-    objectStore['Animation/slow_run_timmy6.obj'] = initObject(gl,'Animation/slow_run_timmy6.obj', 1, 5);
-    objectStore['Animation/slow_run_timmy7.obj'] = initObject(gl,'Animation/slow_run_timmy7.obj', 1, 6);
-    objectStore['Animation/slow_run_timmy8.obj'] = initObject(gl,'Animation/slow_run_timmy8.obj', 1, 7);
-    objectStore['Animation/slow_run_timmy9.obj'] = initObject(gl,'Animation/slow_run_timmy9.obj', 1, 8);
-    objectStore['Animation/slow_run_timmy10.obj'] = initObject(gl,'Animation/slow_run_timmy10.obj', 1, 9);
-    objectStore['Animation/slow_run_timmy11.obj'] = initObject(gl,'Animation/slow_run_timmy11.obj', 1, 10);
-    objectStore['Animation/slow_run_timmy12.obj'] = initObject(gl,'Animation/slow_run_timmy12.obj', 1, 11);
-    objectStore['Animation/slow_run_timmy13.obj'] = initObject(gl,'Animation/slow_run_timmy13.obj', 1, 12);
-    objectStore['Animation/slow_run_timmy14.obj'] = initObject(gl,'Animation/slow_run_timmy14.obj', 1, 13);
-    objectStore['Animation/slow_run_timmy15.obj'] = initObject(gl,'Animation/slow_run_timmy15.obj', 1, 14);
-    objectStore['Animation/slow_run_timmy16.obj'] = initObject(gl,'Animation/slow_run_timmy16.obj', 1, 15);
-    objectStore['Animation/slow_run_timmy17.obj'] = initObject(gl,'Animation/slow_run_timmy17.obj', 1, 16);
-    objectStore['Animation/slow_run_timmy18.obj'] = initObject(gl,'Animation/slow_run_timmy18.obj', 1, 17);
-    objectStore['Animation/slow_run_timmy19.obj'] = initObject(gl,'Animation/slow_run_timmy19.obj', 1, 18);
-    objectStore['Animation/slow_run_timmy20.obj'] = initObject(gl,'Animation/slow_run_timmy20.obj', 1, 19);
-    objectStore['Animation/slow_run_timmy21.obj'] = initObject(gl,'Animation/slow_run_timmy21.obj', 1, 20);
-    objectStore['Animation/slow_run_timmy22.obj'] = initObject(gl,'Animation/slow_run_timmy22.obj', 1, 21);
-    objectStore['Animation/slow_run_timmy23.obj'] = initObject(gl,'Animation/slow_run_timmy23.obj', 1, 22);
+    for (let i = 1; i < 135 + 1; i++) {
+        let fileStringName = "animation-michelle/hip-hop-dancing" + i + ".obj";
+        objectStore[fileStringName] = initObject(gl, fileStringName, 1, i - 1);
+    }
 
 
     function initVertexBuffers(gl)
@@ -262,14 +243,7 @@ window.onload = function init()
     var NLoc = gl.getUniformLocation(program, "normal_matrix");
     gl.uniformMatrix3fv(NLoc, false, flatten(normal_matrix));
 
-    // var CurrentFrame = normalMatrix(view_matrix, true);
-    // var CurrentFrameLoc = gl.getUniformLocation(program, "CurrentFrame");
-    // gl.uniform3fv(CurrentFrameLoc, false, flatten(CurrentFrame));
-    // var NextFrame = normalMatrix(view_matrix, true);
-    // var NextFrameLoc = gl.getUniformLocation(program, "NextFrame");
-    // gl.uniform3fv(NextFrameLoc, false, flatten(NextFrame));
-
-    var animNumFrames = 23;
+    var animNumFrames = 135;
     var counter = 0;
     var g_drawingInfo = null;
 
@@ -280,25 +254,21 @@ window.onload = function init()
         view_matrix = lookAt(eye_pos, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
         gl.uniformMatrix4fv(VLoc, false, flatten(view_matrix));
         if (!g_drawingInfo) {
-            var objDoc_current = objectStore['Animation/slow_run_timmy23.obj'].objDoc;
+            var objDoc_current = objectStore['animation-michelle/hip-hop-dancing135.obj'].objDoc;
         }
         if(!g_drawingInfo && objDoc_current && objDoc_current.isMTLComplete())
         {
-            g_drawingInfo = onReadComplete(gl, objectStore['Animation/slow_run_timmy23.obj'].model, objDoc_current, true);
+            g_drawingInfo = onReadComplete(gl, objectStore['animation-michelle/hip-hop-dancing135.obj'].model, objDoc_current, true);
         }
         if(!g_drawingInfo) {requestAnimationFrame(render); return;}
 
         var variable = Math.floor((counter / 5.25) % animNumFrames);
-        var currentFrame = "Animation/slow_run_timmy" + (variable + 1) + ".obj";
-        var nextFrame = "Animation/slow_run_timmy" + ((variable + 1) % animNumFrames + 1) + ".obj";
+        var currentFrame = "animation-michelle/hip-hop-dancing" + (variable + 1) + ".obj";
+        var nextFrame = "animation-michelle/hip-hop-dancing" + ((variable + 1) % animNumFrames + 1) + ".obj";
         if (counter === 0) {
-            currentFrame = 'Animation/slow_run_timmy23.obj';
-            nextFrame = 'Animation/slow_run_timmy1.obj';
+            currentFrame = 'animation-michelle/hip-hop-dancing135.obj';
+            nextFrame = 'animation-michelle/hip-hop-dancing1.obj';
         }
-        // console.log(currentFrame, nextFrame);
-
-        // g_drawingInfo = onReadComplete(gl, objectStore[currentFrame].model, objectStore[currentFrame].objDoc, true);
-        // var g_drawingInfoNext = onReadComplete(gl, objectStore[nextFrame].model, objectStore[nextFrame].objDoc, false);
 
         gl.drawElements(gl.TRIANGLES, g_drawingInfo.indices.length, gl.UNSIGNED_INT, 0);
         if (!stopRotation | !stopAnimation) 
@@ -311,7 +281,6 @@ window.onload = function init()
                 var g_drawingInfoNext = onReadComplete(gl, objectStore[nextFrame].model, objectStore[nextFrame].objDoc, false);
                 counter += 1;
             }
-            // gl.drawElements(gl.TRIANGLES, g_drawingInfo.indices.length, gl.UNSIGNED_INT, 0);
             requestAnimationFrame(render);
         }
     }
