@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W10P2</title>
+    <script type="text/javascript" src="w10p2.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/OBJParser.js"></script>
+    <script type="text/javascript" src="common/quaternion.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec4 a_Normal;
+        varying vec4 color;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        uniform mat3 normal_matrix;
+
+        vec4 lightPos = vec4(0.0, 0.0, -1.0, 0.0);
+        float V = 1.0;
+        varying vec3 N, L, E;
+
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+
+            vec3 pos = (view_matrix * model_matrix * a_Position).xyz;
+            L = lightPos.w == 0.0 ? normalize(- lightPos.xyz) : normalize(lightPos.xyz - pos.xyz);
+            L = (view_matrix * vec4(L, 0.0)).xyz;
+            E = -pos;
+            N = normalize((view_matrix * model_matrix * vec4(a_Normal.xyz, 0)).xyz);
+
+            color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        varying vec3  N, L, E;
+        uniform float s;
+        void main() {
+            vec4 fColor;
+
+            vec3 H = normalize(normalize(L) + normalize(E));
+            vec4 ambient = vec4(0.0, 0.0, 0.0, 1.0);
+
+            float Kd = max(dot(normalize(L), normalize(N)), 0.0);
+            vec4 diffuse = Kd * vec4(1.0, 0.0, 0.0, 1.0);
+
+            float Ks = pow(max(dot(normalize(N), H), 0.0), s);
+            vec4 specular = Ks * vec4(1.0, 1.0, 1.0, 1.0);
+
+            if (dot(L, N) < 0.0)
+            {
+                specular = vec4(0.0, 0.0, 0.0, 1.0);
+            }
+
+            fColor = ambient + diffuse + specular;
+            fColor.a = 1.0;
+
+            gl_FragColor = fColor;
+        }
+    </script>
+</head>     
+<body>
+    Zoom in-out using the middle wheel button. 
+    <br>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas>  
+    <br>
+    Shininess<input type = "range" id = "s" min = "0.1" max = "1000.0" step = "1" value = "100.0"> 
+    <br>
+</body>
+</html>

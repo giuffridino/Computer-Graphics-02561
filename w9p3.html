@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W9P3</title>
+    <script type="text/javascript" src="w9p3.js"></script>
+    <script type="text/javascript" src="common/initShaders.js"></script>
+    <script type="text/javascript" src="common/MV.js"></script>
+    <script type="text/javascript" src="common/webgl-utils.js"></script>
+    <script type="text/javascript" src="common/OBJParser.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec2 a_TexCoord;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        uniform mat4 view_matrix_light;
+        uniform mat4 projection_matrix_light;
+        uniform mat4 model_matrix_light;
+        varying vec4 v_PositionFromLight;
+        varying vec4 v_Color;
+        varying vec2 fTexCoord;
+
+        //uniform mat4 shadow_matrix;
+
+        uniform vec4 LightPos;
+
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+            v_PositionFromLight = projection_matrix_light * view_matrix_light * model_matrix * a_Position;
+            //gl_Position = projection_matrix_light * view_matrix_light * model_matrix * a_Position;
+            fTexCoord = a_TexCoord;
+            v_Color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform sampler2D shadowMap;
+        uniform sampler2D texMap;
+        uniform int notShadow;
+        varying vec4 v_PositionFromLight;
+        varying vec4 v_Color;
+        varying vec2 fTexCoord;
+
+        float unpackDepth(const in vec4 rgbaDepth)
+        {
+            const vec4 bitShift = vec4(1.0/256.0, 1.0/(256.0 *256.0), 1.0/(256.0 * 256.0 * 256.0), 0.0);
+            return dot(rgbaDepth, bitShift);
+        }
+
+        void main() {
+            vec3 shadowCoord = (v_PositionFromLight.xyz / v_PositionFromLight.w) * 0.5 + 0.5;
+            vec4 rgbaDepth = texture2D(shadowMap, shadowCoord.xy);
+            //float depth = unpackDepth(rgbaDepth);
+            float depth = rgbaDepth.r;
+            float visibility = (shadowCoord.z > depth + 0.003) ? 0.3 : 1.0;
+            vec4 textureRgba = texture2D(texMap, fTexCoord);
+            gl_FragColor = vec4(v_Color.rgb * textureRgba.rgb * visibility, v_Color.a);
+
+            //gl_FragColor = vec4(depth, 0.0, 0.0, 1.0);
+            //if(notShadow == 1)
+            //{
+            //    visibility = vec4(notShadow, notShadow, notShadow, 1.0);
+            //}
+            //else
+            //{
+            //    visibility = vec4(notShadow, notShadow, notShadow, 0.5);
+            //}
+            //gl_FragColor = visibility * texture2D(texMap, fTexCoord);
+        }
+    </script>
+    <script id="vertex-shader-shadow" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+        }
+    </script>
+    <script id="fragment-shader-shadow" type="x-shader/x-fragment">
+        precision mediump float;
+        void main() {
+            const vec4 bitShift = vec4(1.0, 256.0, 256.0 * 256.0, 256.0 * 256.0 * 256.0);
+            const vec4 bitMask = vec4(1.0/256.0, 1.0/256.0, 1.0/256.0, 0.0);
+            vec4 rgbaDepth = fract(gl_FragCoord.z*bitShift);
+            rgbaDepth -= rgbaDepth.gbaa*bitMask;
+            gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);
+            //gl_FragColor = rgbaDepth;
+        }
+    </script>
+    <script id="vertex-shader-obj" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec4 a_Color;
+        attribute vec4 a_Normal;
+        varying vec4 color;
+        uniform mat4 view_matrix;
+        uniform mat4 projection_matrix;
+        uniform mat4 model_matrix;
+        uniform mat3 normal_matrix;
+
+        vec4 lightPos = vec4(3.0, 3.0, 0.0, 1.0);
+
+        uniform vec4 LightPos;
+
+        float V = 1.0;
+        varying vec3 N, L, E;
+
+        void main() {
+            gl_Position = projection_matrix * view_matrix * model_matrix * a_Position;
+
+            vec3 pos = (view_matrix * model_matrix * a_Position).xyz;
+            //L = lightPos.w == 0.0 ? normalize(- lightPos.xyz) : normalize(lightPos.xyz - pos.xyz);
+            L = LightPos.w == 0.0 ? normalize(- LightPos.xyz) : normalize(LightPos.xyz - pos.xyz);
+            L = (view_matrix * vec4(L, 0.0)).xyz;
+            E = -pos;
+            N = normalize((view_matrix * model_matrix * vec4(a_Normal.xyz, 0)).xyz);
+
+            color = a_Color;
+        }
+    </script>
+    <script id="fragment-shader-obj" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 color;
+        varying vec3  N, L, E;
+        uniform float s;
+
+        uniform int notShadow;
+
+        void main() {
+            vec4 fColor;
+            if (notShadow == 1)
+            {
+                vec3 H = normalize(normalize(L) + normalize(E));
+                vec4 ambient = vec4(0.0, 0.0, 0.0, 1.0);
+
+                float Kd = max(dot(normalize(L), normalize(N)), 0.0);
+                vec4 diffuse = Kd * vec4(0.6, 0.6, 0.6, 1.0);
+
+                float Ks = pow(max(dot(normalize(N),H), 0.0), 100.0);
+                vec4 specular = Ks * vec4(1.0, 1.0, 1.0, 1.0);
+
+                if (dot(L, N) < 0.0)
+                {
+                    specular = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+
+                fColor = ambient + diffuse + specular;
+                fColor.a = 1.0;
+            }
+            else
+            {
+                fColor = vec4(0.0, 0.0, 0.0, 1.0);
+            }
+
+            gl_FragColor = fColor;
+        }
+    </script>
+</head>     
+<body>
+    <canvas id="c" width="512" height="512">Please use a browser that supports HTML5 </canvas> 
+    <button id = "StopRotation"> Start/Stop Rotation</button>
+    <button id = "StopMovingObj"> Start/Stop Moving Object</button>
+</body>
+</html>
