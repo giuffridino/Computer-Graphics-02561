@@ -50,7 +50,7 @@ window.onload = function init()
     var objectStore = {};
     var requestStore = [];
     for (let i = 1; i < 135 + 1; i++) {
-        let fileStringName = "animation-michelle/hip-hop-dancing" + i + ".obj";
+        let fileStringName = "animation-michelle-colors/dancing-michelle" + i + ".obj";
         objectStore[fileStringName] = initObject(gl, fileStringName, 1, i - 1);
     }
 
@@ -254,20 +254,20 @@ window.onload = function init()
         view_matrix = lookAt(eye_pos, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
         gl.uniformMatrix4fv(VLoc, false, flatten(view_matrix));
         if (!g_drawingInfo) {
-            var objDoc_current = objectStore['animation-michelle/hip-hop-dancing135.obj'].objDoc;
+            var objDoc_current = objectStore['animation-michelle-colors/dancing-michelle135.obj'].objDoc;
         }
         if(!g_drawingInfo && objDoc_current && objDoc_current.isMTLComplete())
         {
-            g_drawingInfo = onReadComplete(gl, objectStore['animation-michelle/hip-hop-dancing135.obj'].model, objDoc_current, true);
+            g_drawingInfo = onReadComplete(gl, objectStore['animation-michelle-colors/dancing-michelle135.obj'].model, objDoc_current, true);
         }
         if(!g_drawingInfo) {requestAnimationFrame(render); return;}
 
         var variable = Math.floor((counter / 5.25) % animNumFrames);
-        var currentFrame = "animation-michelle/hip-hop-dancing" + (variable + 1) + ".obj";
-        var nextFrame = "animation-michelle/hip-hop-dancing" + ((variable + 1) % animNumFrames + 1) + ".obj";
+        var currentFrame = "animation-michelle-colors/dancing-michelle" + (variable + 1) + ".obj";
+        var nextFrame = "animation-michelle-colors/dancing-michelle" + ((variable + 1) % animNumFrames + 1) + ".obj";
         if (counter === 0) {
-            currentFrame = 'animation-michelle/hip-hop-dancing135.obj';
-            nextFrame = 'animation-michelle/hip-hop-dancing1.obj';
+            currentFrame = 'animation-michelle-colors/dancing-michelle135.obj';
+            nextFrame = 'animation-michelle-colors/dancing-michelle1.obj';
         }
 
         gl.drawElements(gl.TRIANGLES, g_drawingInfo.indices.length, gl.UNSIGNED_INT, 0);

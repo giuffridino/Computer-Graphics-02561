@@ -120,11 +120,13 @@ window.onload = function init()
     var pan_vec = vec2(-1, -1);
     var c = vec3(0, 0, 0);
     var stopSpinning = true;
-    var u;
-    var v;
-    // var u = vec3(0, 0, 0);
-    // var v = vec3(0, 0, 0);
+    var onMouseMoveDone = false;
+    // var u;
+    // var v;
+    var u = vec3(0, 0, 0);
+    var v = vec3(0, 1, 0);
     var startTime = 0;
+    const d = new Date();
     initEventHandlers(canvas, currentAngle);
 
     function initEventHandlers(canvas, currentAngle)
@@ -155,31 +157,32 @@ window.onload = function init()
                 }
                 lastMousepos = mousepos;
                 firstMousepos = mousepos;
-                // startTime = Date.getMilliseconds();
+                onMouseMoveDone = false;
+                startTime = performance.now();
+                // console.log(startTime);
             }
         }
         canvas.onmouseup = function(ev)
         {
-            console.log(mousepos);
+            // console.log(mousepos);
             var rect = ev.target.getBoundingClientRect();
             mousepos = vec2(((ev.clientX - rect.left) / rect.width) * 2 - 1, ((ev.clientY - rect.top) / rect.height) * 2 - 1);
-            console.log(mousepos, firstMousepos);
-            // if ((equal(mousepos, firstMousepos)) | (Date.getMilliseconds() - startTime > 20)) 
-            if ((equal(mousepos, firstMousepos))) 
+            console.log(performance.now() - startTime);
+            if ((equal(mousepos, firstMousepos)) | (performance.now() - startTime >= 200)) 
             {
-                console.log("stopping spin");
+                // console.log("stopping spin");
                 stopSpinning = true;
                 q_inc.setIdentity();
             }
             if (ev.button == 0) 
             {
-                console.log("setting left drag to false");
                 dragging_left = false;
             }
             else if(ev.button == 2)
             {
                 dragging_right = false;
             }
+            // onMouseMoveDone = true;
         }
         canvas.onmousemove = function(ev)
         {
@@ -213,13 +216,14 @@ window.onload = function init()
             else if(dragging_right)
             {
                 pan_vec = vec2(mousepos[0] - lastMousepos[0], mousepos[1] - lastMousepos[1]);
-                console.log(pan_vec);
+                // console.log(pan_vec);
                 var temp_c = add(scale(pan_vec[0], q_rot.apply(vec3(1, 0, 0))), scale(-pan_vec[1], q_rot.apply(up)));
                 c = add(c, negate(temp_c));
-                console.log("inner", c);
+                // console.log("inner", c);
             }
             lastMousepos = mousepos;
             lastlastMousepos = lastMousepos;
+            onMouseMoveDone = true;
         }
 
         canvas.addEventListener("wheel", function(ev){
@@ -266,9 +270,9 @@ window.onload = function init()
         if(!g_drawingInfo) {requestAnimationFrame(render); return;}
 
         // q_inc.setIdentity();
-        if (!stopSpinning) 
+        if (!stopSpinning && onMouseMoveDone) 
         {
-            console.log(u, v);
+            // console.log(u, v);
             q_inc = q_inc.make_rot_vec2vec(normalize(u), normalize(v));
         }
         // else
@@ -277,7 +281,7 @@ window.onload = function init()
         //     q_inc.setIdentity();
         // }
         q_rot = q_rot.multiply(q_inc);
-        console.log(q_rot, q_inc);
+        // console.log(q_rot, q_inc);
         view_matrix = lookAt(add(q_rot.apply(eye_pos), c), c, q_rot.apply(up));
         gl.uniformMatrix4fv(VLoc, false, flatten(view_matrix));
         gl.drawElements(gl.TRIANGLES, g_drawingInfo.indices.length, gl.UNSIGNED_INT, 0);
