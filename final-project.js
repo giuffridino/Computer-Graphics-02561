@@ -16,36 +16,17 @@ window.onload = function init()
 
     function initObject(gl, fileName, scale, frameCounter)
     {
-        // if (current) 
-        // {
-        //     program.a_Position = gl.getAttribLocation(program, 'a_Position');
-        //     program.a_Normal = gl.getAttribLocation(program, 'a_Normal');
-        //     program.a_Color = gl.getAttribLocation(program, 'a_Color');
-        // }
-        // else
-        // {
-        //     program.a_PositionNext = gl.getAttribLocation(program, 'a_PositionNext');
-        //     program.a_NormalNext = gl.getAttribLocation(program, 'a_NormalNext');
-        //     program.a_ColorNext = gl.getAttribLocation(program, 'a_ColorNext');
-        // }
-
         var temp_model = initVertexBuffers(gl);
         var objDoc_res = readOBJFile(fileName, gl, temp_model, scale, true, frameCounter);
 
         return {model: temp_model, objDoc: objDoc_res};
-        // return temp_model;
     }
     
     a_PositionLoc = gl.getAttribLocation(program, 'a_Position');
+    a_PositionNextLoc = gl.getAttribLocation(program, 'a_PositionNext');
     a_NormalLoc = gl.getAttribLocation(program, 'a_Normal');
     a_ColorLoc = gl.getAttribLocation(program, 'a_Color');
-    a_PositionNextLoc = gl.getAttribLocation(program, 'a_PositionNext');
-    // a_NormalNextLoc = gl.getAttribLocation(program, 'a_NormalNext');
-    // a_ColorNextLoc = gl.getAttribLocation(program, 'a_ColorNext');
-
-    // var model = initObject(gl,'Animation/slow_run_timmy1.obj', 1, true);
-    // var result = initObject(gl,'Animation/slow_run_timmy1.obj', 1, true);
-    // var result1 = initObject(gl,'Animation/slow_run_timmy2.obj', 1, false);
+    a_TexCoordLoc = gl.getAttribLocation(program, 'a_TexCoord');
 
     var objectStore = {};
     var requestStore = [];
@@ -62,24 +43,11 @@ window.onload = function init()
         o.vertexBuffer = gl.createBuffer();
         o.normalBuffer = gl.createBuffer();
         o.colorBuffer = gl.createBuffer();
-        // o.vertexBuffer = createEmptyArrayBuffer(gl, a_PositionLoc, 3, gl.FLOAT);
-        // o.normalBuffer = createEmptyArrayBuffer(gl, a_NormalLoc, 3, gl.FLOAT);
-        // o.colorBuffer = createEmptyArrayBuffer(gl, a_ColorLoc, 4, gl.FLOAT);
+        o.texCoordBuffer = gl.createBuffer();
         o.indexBuffer = gl.createBuffer();
 
         return o;
     }
-
-    // function createEmptyArrayBuffer(gl, a_attribute, num, type)
-    // {
-    //     var buffer = gl.createBuffer();
-
-    //     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    //     gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
-    //     gl.enableVertexAttribArray(a_attribute);
-
-    //     return buffer;
-    // }
 
     //Read a file
     
@@ -88,7 +56,6 @@ window.onload = function init()
         var objDoc = null;
         var request = new XMLHttpRequest();
         requestStore.push(request);
-        // requestStore[frameCounter] = new XMLHttpRequest();
         requestStore[frameCounter].onreadystatechange = function(){
             if (requestStore[frameCounter].readyState === 4 && requestStore[frameCounter].status !== 404 ) {
                 objDoc = onReadOBJFile(requestStore[frameCounter].responseText, fileName, gl, in_model, scale, reverse, frameCounter);
@@ -96,25 +63,14 @@ window.onload = function init()
         }
         requestStore[frameCounter].open('GET', fileName, true); //Create a requestStore[frameCounter] to get file
         request.send()
-        // var request = new XMLHttpRequest();
-        // request.onreadystatechange = function(){
-        //     if (request.readyState === 4 && request.status !== 404 ) {
-        //         objDoc = onReadOBJFile(request.responseText, fileName, gl, in_model, scale, reverse, frameCounter);
-        //     }
-        // }
-        // request.open('GET', fileName, true); //Create a request to get file
-        // request.send()
         return objDoc;                 //Send request
     }
 
-    // var g_objDoc = null;
-    // var g_drawingInfo = null;
     var g_objDoc = {};
 
     function onReadOBJFile(fileString, fileName, gl, o, scale, reverse, frameCounter)
     {
         var objDoc = new OBJDoc(fileName);
-        // objDoc = new OBJDoc(fileName);
         var result = objDoc.parse(fileString, scale, reverse);
         if(!result){
             g_objDoc = null; g_drawingInfo = null;
@@ -147,10 +103,6 @@ window.onload = function init()
             gl.vertexAttribPointer(a_NormalLoc, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(a_NormalLoc);
         }
-        // else {
-        //     gl.vertexAttribPointer(a_NormalNextLoc, 3, gl.FLOAT, false, 0, 0);
-        //     gl.enableVertexAttribArray(a_NormalNextLoc);
-        // }
         
         gl.bindBuffer(gl.ARRAY_BUFFER, in_model.colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, drawingInfo.colors, gl.STATIC_DRAW);
@@ -158,10 +110,11 @@ window.onload = function init()
             gl.vertexAttribPointer(a_ColorLoc, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(a_ColorLoc);
         }
-        // else {
-        //     gl.vertexAttribPointer(a_ColorNextLoc, 3, gl.FLOAT, false, 0, 0);
-        //     gl.enableVertexAttribArray(a_ColorNextLoc);
-        // }
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, in_model.texCoordBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, drawingInfo.texCoords, gl.STATIC_DRAW);
+        gl.vertexAttribPointer(a_TexCoordLoc, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_TexCoordLoc);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, in_model.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, drawingInfo.indices, gl.STATIC_DRAW);
@@ -169,6 +122,41 @@ window.onload = function init()
         return drawingInfo;
     }
 
+    var image = document.createElement("img");
+    image.crossorigin = "anonymous";
+    image.src = "2D_Textures/Ch03_1001_Diffuse.png";
+    image.onload = function() {
+        var texture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0 , gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        var texMapLoc = gl.getUniformLocation(program, "texMap");
+        gl.uniform1i(texMapLoc, 0);
+    };
+
+    var image1 = document.createElement("img");
+    image1.crossorigin = "anonymous";
+    image1.src = "2D_Textures/Ch03_1001_Glossiness.png";
+    image1.onload = function() {
+        var texture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0 , gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image1);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        var texMap1Loc = gl.getUniformLocation(program, "texMap1");
+        gl.uniform1i(texMap1Loc, 1);
+    };
+    gl.activeTexture(gl.TEXTURE0);
+    
     var interpLoc = gl.getUniformLocation(program, "interp");
     gl.uniform1f(interpLoc, 0.5);
     var interpSlider = document.getElementById("interp")
@@ -182,7 +170,7 @@ window.onload = function init()
     });
 
     var sLoc = gl.getUniformLocation(program, "s");
-    gl.uniform1f(sLoc, 100.0);
+    gl.uniform1f(sLoc, 1000.0);
     var sSlider = document.getElementById("s")
     sSlider.addEventListener("input", function(ev)
     {
@@ -201,7 +189,6 @@ window.onload = function init()
         {
             stopRotation = false;
             if (stopAnimation) { render(); }
-            // render();
         }
         else
         {
@@ -216,7 +203,6 @@ window.onload = function init()
         {
             stopAnimation = false;
             if (stopRotation) { render(); }
-            // render();
         }
         else
         {
@@ -262,7 +248,7 @@ window.onload = function init()
         }
         if(!g_drawingInfo) {requestAnimationFrame(render); return;}
 
-        var variable = Math.floor((counter / 5.25) % animNumFrames);
+        var variable = Math.floor((counter / 3) % animNumFrames);
         var currentFrame = "animation-michelle-colors/dancing-michelle" + (variable + 1) + ".obj";
         var nextFrame = "animation-michelle-colors/dancing-michelle" + ((variable + 1) % animNumFrames + 1) + ".obj";
         if (counter === 0) {
